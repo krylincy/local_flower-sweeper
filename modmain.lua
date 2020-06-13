@@ -16,7 +16,25 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				local names = {"f1","f2","f3","f4","f5","f6","f7","f8","f9","f10"}
 				local ROSE_NAME = "rose"
 				local ROSE_CHANCE = GetModConfigData("rosePercent")		
-
+				
+				local nextAnimName				
+				local currentAnimName = target.animname
+				
+				if GetModConfigData("randomSelection") == 1 then
+					nextAnimName = math.random() < ROSE_CHANCE and ROSE_NAME or names[math.random(#names)]
+				else
+					if currentAnimName == ROSE_NAME then
+						-- start from the beginning
+						nextAnimName = "f1"
+					elseif  currentAnimName == "f10" then
+						-- add the rose as last flower
+						nextAnimName = ROSE_NAME
+					else
+						-- extract the number (string position 2 to 3), increment and add the pre "f"						
+						nextAnimName = "f"..(math.floor(string.sub(currentAnimName, 2, 3) + 1))					
+					end
+				
+				end
 
 				-- the puff effect
 				local fx = GLOBAL.SpawnPrefab("explode_reskin")
@@ -26,7 +44,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
 				
 				-- change flower skin as in the flower "setflowertype" function
-				target.animname = math.random() < ROSE_CHANCE and ROSE_NAME or names[math.random(#names)]
+				target.animname = nextAnimName
 				target.AnimState:PlayAnimation(target.animname)
 				if target.animname == ROSE_NAME then
 					target:AddTag("thorny")
