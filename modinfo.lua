@@ -1,5 +1,5 @@
 name = "Flower Sweeper"
-version = "2.0"
+version = "2.1"
 description = "You can change the flowertype with the Clean Sweeper.\n\nChange the chance to spawn a rose intstead of a regular flower in the config. This only apply to the chance when sweeping a flower, not when planting a butterfly. \n\nVersion: "..version
 author = "krylincy"
 api_version = 10
@@ -47,6 +47,16 @@ configuration_options = {
 			{description = "No", data = 0},
 			{description = "Yes, not empty", data = 1},
 			{description = "Yes, any", data = 2},
+		},
+		default = 0,
+	},
+	{
+		name = "changeBerrybushesType",
+		label = "Berrybushes Type",
+        hover = "Stlye only means you only change the small Berrybush into the alternative form. Style and Type allow to change the Juicy Berrybush, too.",
+		options = {
+			{description = "Style only", data = 0},
+			{description = "Style & Type", data = 1},
 		},
 		default = 0,
 	},

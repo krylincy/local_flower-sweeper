@@ -8,12 +8,15 @@ AddPrefabPostInit("reskin_tool", function(inst)
 		
 		local function can_cast_fn(doer, target, pos)	
 			-- if it is a flower, return true, else return whatever the default function would return
-			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush_juicy")			
-				
-			if isModPrefabBerrybush and not isCastOnEmptyPrefab then
+			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy")
+	
+			if isModPrefabBerrybush then
 				-- it is a berrybush and not barren or any
-				local isCastOnEmptyPrefab = GetModConfigData("changeBerrybushes") == 1  and not target.components.pickable:CanBePicked()				
-				return not isCastOnEmptyPrefab
+				local isCastOnEmptyPrefab = GetModConfigData("changeBerrybushes") == 1  and not target.components.pickable:CanBePicked()	
+				-- if you wanna change only the style, the cast on juicy is not allowed
+				local juciyNotAllowed = GetModConfigData("changeBerrybushesType") == 0 and target.prefab == "berrybush_juicy"								
+			
+				return not juciyNotAllowed and not isCastOnEmptyPrefab
 			elseif target.prefab == "flower" then
 				-- it is a flower
 				return true
@@ -62,11 +65,22 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				if target.animname == ROSE_NAME then
 					target:AddTag("thorny")
 				end	
-			elseif target.prefab == "berrybush" or target.prefab == "berrybush_juicy" then
+			elseif target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy" then
 				local nextPrefab = "berrybush"
+				local changeType = GetModConfigData("changeBerrybushesType")
 				
 				if target.prefab == "berrybush" then
-					nextPrefab = "berrybush_juicy"
+					nextPrefab = "berrybush2"
+				elseif target.prefab == "berrybush2" then
+					if changeType == 0 then
+						-- if you only change type, go back to berrybush
+						nextPrefab = "berrybush"
+					else
+						-- if you rotate through go to juicy
+						nextPrefab = "berrybush_juicy"
+					end				
+				elseif target.prefab == "berrybush_juicy" then
+					nextPrefab = "berrybush"
 				end
 								
 				-- the puff effect
