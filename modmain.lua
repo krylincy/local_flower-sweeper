@@ -8,7 +8,19 @@ AddPrefabPostInit("reskin_tool", function(inst)
 		
 		local function can_cast_fn(doer, target, pos)	
 			-- if it is a flower, return true, else return whatever the default function would return
-			return target.prefab == "flower" or oldTestSpellFunction(doer, target, pos)
+			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush_juicy")			
+				
+			if isModPrefabBerrybush and not isCastOnEmptyPrefab then
+				-- it is a berrybush and not barren or any
+				local isCastOnEmptyPrefab = GetModConfigData("changeBerrybushes") == 1  and not target.components.pickable:CanBePicked()				
+				return not isCastOnEmptyPrefab
+			elseif target.prefab == "flower" then
+				-- it is a flower
+				return true
+			else
+				-- it is something default
+				return oldTestSpellFunction(doer, target, pos)
+			end			
 		end
 		
 		local function spellCB(tool, target, pos)					
@@ -25,6 +37,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				else
 					if currentAnimName == ROSE_NAME then
 						-- start from the beginning
+						target:RemoveTag("thorny")
 						nextAnimName = "f1"
 					elseif  currentAnimName == "f10" then
 						-- add the rose as last flower
@@ -32,8 +45,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 					else
 						-- extract the number (string position 2 to 3), increment and add the pre "f"						
 						nextAnimName = "f"..(math.floor(string.sub(currentAnimName, 2, 3) + 1))					
-					end
-				
+					end				
 				end
 
 				-- the puff effect
@@ -46,9 +58,32 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				-- change flower skin as in the flower "setflowertype" function
 				target.animname = nextAnimName
 				target.AnimState:PlayAnimation(target.animname)
+								
 				if target.animname == ROSE_NAME then
 					target:AddTag("thorny")
-				end		
+				end	
+			elseif target.prefab == "berrybush" or target.prefab == "berrybush_juicy" then
+				local nextPrefab = "berrybush"
+				
+				if target.prefab == "berrybush" then
+					nextPrefab = "berrybush_juicy"
+				end
+								
+				-- the puff effect
+				local fx = GLOBAL.SpawnPrefab("explode_reskin")
+				fx.Transform:SetScale(1.4, 1.4, 1.4)
+
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+				fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				
+				
+				-- add new bush at the old position
+				local newBush = GLOBAL.SpawnPrefab(nextPrefab)
+				newBush.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				
+				-- remove old bush
+				target:Remove()				
+				
 			else
 				-- do default stuff
 				oldSpellFunction(tool, target, pos)
