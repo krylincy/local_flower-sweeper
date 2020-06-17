@@ -3,12 +3,28 @@ AddPrefabPostInit("reskin_tool", function(inst)
 	if inst.components ~= nil and inst.components.spellcaster ~= nil then
 		-- save old functions to just extend them
 		local oldSpellFunction = inst.components.spellcaster.spell			
-		local oldTestSpellFunction = inst.components.spellcaster.can_cast_fn			
+		local oldTestSpellFunction = inst.components.spellcaster.can_cast_fn	
+
+		local function puffEffect(target, scale)
+			local fx = GLOBAL.SpawnPrefab("explode_reskin")
+			fx.Transform:SetScale(1, 1, 1)
+
+			local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+			fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+		end
 		
-		
+		function inPrefabList(tbl, item)
+			for key, value in pairs(tbl) do
+				if value == item then return true end
+			end
+			return false
+		end
+
 		local function can_cast_fn(doer, target, pos)	
 			-- if it is a flower, return true, else return whatever the default function would return
 			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy")
+			local isModPrefabTwiggy = GetModConfigData("changeTwiggy") == 1 and (target.prefab == "twiggytree" or target.prefab == "sapling")
+			local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern"}
 	
 			if isModPrefabBerrybush then
 				-- it is a berrybush and not barren or any
@@ -17,8 +33,8 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				local juciyNotAllowed = GetModConfigData("changeBerrybushesType") == 0 and target.prefab == "berrybush_juicy"								
 			
 				return not juciyNotAllowed and not isCastOnEmptyPrefab
-			elseif target.prefab == "flower" then
-				-- it is a flower
+			elseif inPrefabList(validModPrefab, target.prefab) or isModPrefabTwiggy then
+				-- it is a valid mod prefab
 				return true
 			else
 				-- it is something default
@@ -52,11 +68,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				end
 
 				-- the puff effect
-				local fx = GLOBAL.SpawnPrefab("explode_reskin")
-				fx.Transform:SetScale(1, 1, 1)
-
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-				fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				puffEffect(target, 1)
 				
 				-- change flower skin as in the flower "setflowertype" function
 				target.animname = nextAnimName
@@ -64,7 +76,84 @@ AddPrefabPostInit("reskin_tool", function(inst)
 								
 				if target.animname == ROSE_NAME then
 					target:AddTag("thorny")
+				end
+			elseif target.prefab == "flower_evil" then
+				local currentAnimName = target.animname	  
+				
+				if GetModConfigData("randomSelection") == 1 then
+					nextAnimName = "f" .. tostring(math.random(8))
+				else
+					if  currentAnimName == "f8" then
+						-- start from beginning
+						nextAnimName = "f1"
+					else
+						-- extract the number (string position 2 to 3), increment and add the pre "f"						
+						nextAnimName = "f"..(math.floor(string.sub(currentAnimName, 2, 3) + 1))					
+					end				
+				end
+
+				-- the puff effect
+				puffEffect(target, 1)
+				
+				-- change flower skin as in the default function
+				target.animname = nextAnimName
+				target.AnimState:PlayAnimation(target.animname)
+			elseif target.prefab == "succulent_plant" or target.prefab == "succulent_potted" then				
+				local currentAnimName = target.plantid
+				
+				-- differ the plant vs the potted version
+				local prefabName = "succulent"
+				local symbolName = "Symbol_1"
+				local symbolPrefix = "Symbol_"
+				
+				if target.prefab == "succulent_potted" then
+					prefabName = "succulent_potted"
+					symbolName = "succulent"
+					symbolPrefix = "succulent"
+				end
+    
+				
+				if GetModConfigData("randomSelection") == 1 then
+					target.plantid = math.random(5)
+				else
+					if target.plantid == 5 then
+						-- start from beginning
+						target.plantid = 1
+					else			
+						target.plantid = target.plantid + 1			
+					end				
+				end
+
+				-- the puff effect
+				puffEffect(target, 1)
+				
+				-- change flower skin as in the default function
+				if target.plantid == 1 then
+					target.AnimState:ClearOverrideSymbol(symbolName)
+				else
+					target.AnimState:OverrideSymbol(symbolName, prefabName, symbolPrefix..tostring(target.plantid))
 				end	
+			elseif target.prefab == "cave_fern" or target.prefab == "pottedfern" then				
+				local currentAnimName = target.animname	  
+				
+				if GetModConfigData("randomSelection") == 1 then
+					nextAnimName = "f" .. tostring(math.random(10))
+				else
+					if  currentAnimName == "f10" then
+						-- start from beginning
+						nextAnimName = "f1"
+					else
+						-- extract the number (string position 2 to 3), increment and add the pre "f"						
+						nextAnimName = "f"..(math.floor(string.sub(currentAnimName, 2, 3) + 1))					
+					end				
+				end
+
+				-- the puff effect
+				puffEffect(target, 1)
+				
+				-- change flower skin as in the default function
+				target.animname = nextAnimName
+				target.AnimState:PlayAnimation(target.animname)
 			elseif target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy" then
 				local nextPrefab = "berrybush"
 				local changeType = GetModConfigData("changeBerrybushesType")
@@ -84,16 +173,38 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				end
 								
 				-- the puff effect
-				local fx = GLOBAL.SpawnPrefab("explode_reskin")
-				fx.Transform:SetScale(1.4, 1.4, 1.4)
-
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-				fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
-				
+				puffEffect(target, 1.4)				
 				
 				-- add new bush at the old position
 				local newBush = GLOBAL.SpawnPrefab(nextPrefab)
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+				
 				newBush.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				
+				-- remove old bush
+				target:Remove()
+			elseif target.prefab == "sapling" then								
+				-- the puff effect
+				puffEffect(target, 1.4)				
+				
+				-- add new tree at the old position
+				local newTree = GLOBAL.SpawnPrefab("twiggytree")
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+				
+				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				
+				-- remove old bush
+				target:Remove()				
+				
+			elseif target.prefab == "twiggytree" then								
+				-- the puff effect
+				puffEffect(target, 1.8)				
+				
+				-- add new tree at the old position
+				local newTree = GLOBAL.SpawnPrefab("sapling")
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+				
+				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
 				
 				-- remove old bush
 				target:Remove()				

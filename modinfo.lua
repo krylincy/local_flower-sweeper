@@ -1,5 +1,5 @@
 name = "Flower Sweeper"
-version = "2.1"
+version = "3.0"
 description = "You can change the flowertype with the Clean Sweeper.\n\nChange the chance to spawn a rose intstead of a regular flower in the config. This only apply to the chance when sweeping a flower, not when planting a butterfly. \n\nVersion: "..version
 author = "krylincy"
 api_version = 10
@@ -13,7 +13,7 @@ all_clients_require_mod = true
 configuration_options = {
 	{
 		name = "randomSelection",
-		label = "Selection",
+		label = "Flower Selection",
         hover = "How to find next flowertype. In sequence the rose chance is irrelevant.",
 		options = {
 			{description = "Sequence", data = 0},
@@ -38,6 +38,16 @@ configuration_options = {
 			{description = "10%", data = 0.1},
 		},
 		default = 0.01,
+	},
+	{
+		name = "changeTwiggy",
+		label = "Sweep Sapling",
+        hover = "Change from Sapling to Twiggy Tree and vice versa.",
+		options = {
+			{description = "No", data = 0},
+			{description = "Yes", data = 1},
+		},
+		default = 0,
 	},
 	{
 		name = "changeBerrybushes",
