@@ -7,7 +7,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 
 		local function puffEffect(target, scale)
 			local fx = GLOBAL.SpawnPrefab("explode_reskin")
-			fx.Transform:SetScale(1, 1, 1)
+			fx.Transform:SetScale(scale, scale, scale)
 
 			local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
 			fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
@@ -42,8 +42,10 @@ AddPrefabPostInit("reskin_tool", function(inst)
 			end			
 		end
 		
-		local function spellCB(tool, target, pos)					
-			if target.prefab == "flower" then
+		local function spellCB(tool, target, pos)	
+			-- if there is no target, set empty string to compare
+			local targetPrefabName = target ~= nil and target.prefab or ""
+			if targetPrefabName == "flower" then
 				local names = {"f1","f2","f3","f4","f5","f6","f7","f8","f9","f10"}
 				local ROSE_NAME = "rose"
 				local ROSE_CHANCE = GetModConfigData("rosePercent")		
@@ -77,7 +79,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				if target.animname == ROSE_NAME then
 					target:AddTag("thorny")
 				end
-			elseif target.prefab == "flower_evil" then
+			elseif targetPrefabName == "flower_evil" then
 				local currentAnimName = target.animname	  
 				
 				if GetModConfigData("randomSelection") == 1 then
@@ -98,7 +100,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				-- change flower skin as in the default function
 				target.animname = nextAnimName
 				target.AnimState:PlayAnimation(target.animname)
-			elseif target.prefab == "succulent_plant" or target.prefab == "succulent_potted" then				
+			elseif targetPrefabName == "succulent_plant" or targetPrefabName == "succulent_potted" then				
 				local currentAnimName = target.plantid
 				
 				-- differ the plant vs the potted version
@@ -133,7 +135,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				else
 					target.AnimState:OverrideSymbol(symbolName, prefabName, symbolPrefix..tostring(target.plantid))
 				end	
-			elseif target.prefab == "cave_fern" or target.prefab == "pottedfern" then				
+			elseif targetPrefabName == "cave_fern" or targetPrefabName == "pottedfern" then				
 				local currentAnimName = target.animname	  
 				
 				if GetModConfigData("randomSelection") == 1 then
@@ -154,7 +156,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				-- change flower skin as in the default function
 				target.animname = nextAnimName
 				target.AnimState:PlayAnimation(target.animname)
-			elseif target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy" then
+			elseif targetPrefabName == "berrybush" or targetPrefabName == "berrybush2" or targetPrefabName == "berrybush_juicy" then
 				local nextPrefab = "berrybush"
 				local changeType = GetModConfigData("changeBerrybushesType")
 				
@@ -183,7 +185,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				
 				-- remove old bush
 				target:Remove()
-			elseif target.prefab == "sapling" then								
+			elseif targetPrefabName == "sapling" then								
 				-- the puff effect
 				puffEffect(target, 1.4)				
 				
@@ -196,7 +198,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				-- remove old bush
 				target:Remove()				
 				
-			elseif target.prefab == "twiggytree" then								
+			elseif targetPrefabName == "twiggytree" then								
 				-- the puff effect
 				puffEffect(target, 1.8)				
 				
