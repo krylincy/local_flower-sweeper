@@ -22,9 +22,10 @@ AddPrefabPostInit("reskin_tool", function(inst)
 
 		local function can_cast_fn(doer, target, pos)	
 			-- if it is a flower, return true, else return whatever the default function would return
+			-- print('###target ', target, target.prefab)
 			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy")
 			local isModPrefabTwiggy = GetModConfigData("changeTwiggy") == 1 and (target.prefab == "twiggytree" or target.prefab == "sapling")
-			local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern"}
+			local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub"}
 	
 			if isModPrefabBerrybush then
 				-- it is a berrybush and not barren or any
@@ -209,8 +210,27 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
 				
 				-- remove old bush
-				target:Remove()				
+				target:Remove()			
+			elseif targetPrefabName == "marbleshrub" then				
+				-- the puff effect
+				puffEffect(target, 1.8)
+								
+				local currentShapeNumber = target.shapenumber
+				-- returns 1, 2 or 3
+				local newShapeNumber = (currentShapeNumber + 1) < 4 and currentShapeNumber + 1 or 1
+
+				-- randominze the color again
+				local color = .5 + math.random() * .5
+				target.AnimState:SetMultColour(color, color, color, 1)	
 				
+				if newShapeNumber == 1 then
+					target.AnimState:ClearOverrideSymbol("marbleshrub_top1")
+				else
+					target.AnimState:OverrideSymbol("marbleshrub_top1", "marbleshrub_build", "marbleshrub_top"..newShapeNumber)
+				end			
+				
+				target.MiniMapEntity:SetIcon("marbleshrub"..newShapeNumber..".png")
+				target.shapenumber = newShapeNumber				
 			else
 				-- do default stuff
 				oldSpellFunction(tool, target, pos)

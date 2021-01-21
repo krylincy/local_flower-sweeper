@@ -1,5 +1,5 @@
 name = "Flower Sweeper"
-version = "3.1"
+version = "4"
 description = "You can change the flowertype with the Clean Sweeper.\n\nChange the chance to spawn a rose intstead of a regular flower in the config. This only apply to the chance when sweeping a flower, not when planting a butterfly. \n\nVersion: "..version
 author = "krylincy"
 api_version = 10
