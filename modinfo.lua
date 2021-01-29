@@ -1,6 +1,6 @@
-name = "Flower Sweeper"
-version = "4"
-description = "You can change the flowertype with the Clean Sweeper.\n\nChange the chance to spawn a rose intstead of a regular flower in the config. This only apply to the chance when sweeping a flower, not when planting a butterfly. \n\nVersion: "..version
+name = "Clean Sweeper Expanded"
+version = "5"
+description = "You can change the appearances/type for more prefabs with the Clean Sweeper. This includes by default: Flowers, Evil Flowers, Ferns, Potted Fern, Succulents, Potted Succulent and Marble Shrub (all stages). \n\nOptional: Berrybushes (Types), Sapling <=> Twiggy Tree, Grass <=> Reeds.\n\nVersion: "..version
 author = "krylincy"
 api_version = 10
 forumthread = ""
@@ -67,6 +67,16 @@ configuration_options = {
 		options = {
 			{description = "Style only", data = 0},
 			{description = "Style & Type", data = 1},
+		},
+		default = 0,
+	},
+	{
+		name = "changeReeds",
+		label = "Reeds and Grass",
+        hover = "Change from Reeds to Grass and vice versa.",
+		options = {
+			{description = "No", data = 0},
+			{description = "Yes", data = 1},
 		},
 		default = 0,
 	},

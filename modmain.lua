@@ -26,6 +26,11 @@ AddPrefabPostInit("reskin_tool", function(inst)
 			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy")
 			local isModPrefabTwiggy = GetModConfigData("changeTwiggy") == 1 and (target.prefab == "twiggytree" or target.prefab == "sapling")
 			local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub"}
+			
+			if GetModConfigData("changeReeds") == 1 then
+				table.insert(validModPrefab, "reeds")
+				table.insert(validModPrefab, "grass")
+			end
 	
 			if isModPrefabBerrybush then
 				-- it is a berrybush and not barren or any
@@ -230,7 +235,31 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				end			
 				
 				target.MiniMapEntity:SetIcon("marbleshrub"..newShapeNumber..".png")
-				target.shapenumber = newShapeNumber				
+				target.shapenumber = newShapeNumber		
+			elseif targetPrefabName == "reeds" then								
+				-- the puff effect
+				puffEffect(target, 1.8)				
+				
+				-- add new tree at the old position
+				local newPrefab = GLOBAL.SpawnPrefab("grass")
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+				
+				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				
+				-- remove old prefab
+				target:Remove()
+			elseif targetPrefabName == "grass" then								
+				-- the puff effect
+				puffEffect(target, 1.8)				
+				
+				-- add new tree at the old position
+				local newPrefab = GLOBAL.SpawnPrefab("reeds")
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+				
+				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+				
+				-- remove old prefab
+				target:Remove()
 			else
 				-- do default stuff
 				oldSpellFunction(tool, target, pos)
