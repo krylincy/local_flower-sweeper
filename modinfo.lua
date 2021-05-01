@@ -1,6 +1,18 @@
 name = "Clean Sweeper Expanded"
-version = "5"
-description = "You can change the appearances/type for more prefabs with the Clean Sweeper. This includes by default: Flowers, Evil Flowers, Ferns, Potted Fern, Succulents, Potted Succulent and Marble Shrub (all stages). \n\nOptional: Berrybushes (Types), Sapling <=> Twiggy Tree, Grass <=> Reeds.\n\nVersion: "..version
+version = "6"
+description = [[
+You can change the appearances/type for more prefabs with the Clean Sweeper. 
+
+This includes by default: 
+Flowers, Evil Flowers, Ferns, Potted Fern, Succulents, Potted Succulent, Marble Shrub (all stages) and Birchnut Trees. 
+
+Optional (default off): 
++ Evergreen <=> Lumpy Evergreen
++ Grass <=> Reeds
++ Sapling <=> Twiggy Tree
++ Berrybushes (Types with configuration options) 
+
+Version: ]]..version
 author = "krylincy"
 api_version = 10
 forumthread = ""
@@ -14,7 +26,7 @@ configuration_options = {
 	{
 		name = "randomSelection",
 		label = "Flower Selection",
-        hover = "How to find next flowertype. In sequence the rose chance is irrelevant.",
+        hover = "How to find next flowertype. When 'sequence' is choosen the 'Rose Chance' is irrelevant.",
 		options = {
 			{description = "Sequence", data = 0},
 			{description = "Random", data = 1},
@@ -40,6 +52,26 @@ configuration_options = {
 		default = 0.01,
 	},
 	{
+		name = "changeEvergreens",
+		label = "Sweep Evergreen",
+        hover = "Change from Evergreen to Lumpy Evergreen and vice versa.",
+		options = {
+			{description = "No", data = 0},
+			{description = "Yes", data = 1},
+		},
+		default = 0,
+	},
+	{
+		name = "changeReeds",
+		label = "Reeds and Grass",
+        hover = "Change from Reeds to Grass and vice versa.",
+		options = {
+			{description = "No", data = 0},
+			{description = "Yes", data = 1},
+		},
+		default = 0,
+	},
+	{
 		name = "changeTwiggy",
 		label = "Sweep Sapling",
         hover = "Change from Sapling to Twiggy Tree and vice versa.",
@@ -52,7 +84,7 @@ configuration_options = {
 	{
 		name = "changeBerrybushes",
 		label = "Sweep Berrybushes",
-        hover = "Change from normal Berrybush to Juicy Berrybush and vice versa. Choose 'not empty' to avoid cheaty changing empty/barren Berrybush to full one.",
+        hover = "Allow changing Berrybushes (select details in 'Berrybushes Types'). Choose 'not empty' to avoid cheaty changing empty/barren Berrybush to full one.",
 		options = {
 			{description = "No", data = 0},
 			{description = "Yes, not empty", data = 1},
@@ -63,20 +95,10 @@ configuration_options = {
 	{
 		name = "changeBerrybushesType",
 		label = "Berrybushes Type",
-        hover = "Stlye only means you only change the small Berrybush into the alternative form. Style and Type allow to change the Juicy Berrybush, too.",
+        hover = "'Stlye only' means you only change Berrybush into the Leavy form. 'Style and Type' allows you to change the Juicy Berrybush, too.",
 		options = {
 			{description = "Style only", data = 0},
 			{description = "Style & Type", data = 1},
-		},
-		default = 0,
-	},
-	{
-		name = "changeReeds",
-		label = "Reeds and Grass",
-        hover = "Change from Reeds to Grass and vice versa.",
-		options = {
-			{description = "No", data = 0},
-			{description = "Yes", data = 1},
 		},
 		default = 0,
 	},

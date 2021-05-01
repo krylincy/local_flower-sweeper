@@ -1,4 +1,21 @@
+-- setup prefab data
+local evergreenPrefabs = {"evergreen_normal", "evergreen_tall", "evergreen_short", "evergreen_sparse_normal", "evergreen_sparse_tall", "evergreen_sparse_short"}				
 
+-- define what prefab are valid to sweep
+-- default prefabs
+local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub", "deciduoustree"} 
+
+-- mod configuration prefabs
+if GetModConfigData("changeEvergreens") == 1 then				
+	table.insert(validModPrefab, "evergreen")
+	table.insert(validModPrefab, "evergreen_sparse")
+end			
+
+if GetModConfigData("changeReeds") == 1 then
+	table.insert(validModPrefab, "reeds")
+	table.insert(validModPrefab, "grass")
+end
+			
 AddPrefabPostInit("reskin_tool", function(inst) 
 	if inst.components ~= nil and inst.components.spellcaster ~= nil then
 		-- save old functions to just extend them
@@ -21,16 +38,8 @@ AddPrefabPostInit("reskin_tool", function(inst)
 		end
 
 		local function can_cast_fn(doer, target, pos)	
-			-- if it is a flower, return true, else return whatever the default function would return
-			-- print('###target ', target, target.prefab)
 			local isModPrefabBerrybush = GetModConfigData("changeBerrybushes") > 0 and (target.prefab == "berrybush" or target.prefab == "berrybush2" or target.prefab == "berrybush_juicy")
-			local isModPrefabTwiggy = GetModConfigData("changeTwiggy") == 1 and (target.prefab == "twiggytree" or target.prefab == "sapling")
-			local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub"}
-			
-			if GetModConfigData("changeReeds") == 1 then
-				table.insert(validModPrefab, "reeds")
-				table.insert(validModPrefab, "grass")
-			end
+			local isModPrefabTwiggy = GetModConfigData("changeTwiggy") == 1 and (target.prefab == "twiggytree" or target.prefab == "sapling")	
 	
 			if isModPrefabBerrybush then
 				-- it is a berrybush and not barren or any
@@ -201,7 +210,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				
 				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
 				
-				-- remove old bush
+				-- remove old tree
 				target:Remove()				
 				
 			elseif targetPrefabName == "twiggytree" then								
@@ -214,7 +223,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				
 				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
 				
-				-- remove old bush
+				-- remove old tree
 				target:Remove()			
 			elseif targetPrefabName == "marbleshrub" then				
 				-- the puff effect
@@ -260,6 +269,42 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				
 				-- remove old prefab
 				target:Remove()
+			elseif targetPrefabName ==  "evergreen" or targetPrefabName ==  "evergreen_sparse" then
+				if not target:HasTag("stump") then		
+					local newPrefabName = targetPrefabName ==  "evergreen_sparse" and "evergreen" or "evergreen_sparse"
+					local stage = 0
+					
+					if target.components ~= nil and target.components.growable then
+						stage = target.components.growable.stage
+					end								
+					
+					-- add new tree at the old position
+					local newPrefab = GLOBAL.SpawnPrefab(newPrefabName)
+					local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+					
+					if newPrefab.components ~= nil and newPrefab.components.growable then
+						newPrefab.components.growable:SetStage(stage)
+					end
+					
+					-- the puff effect
+					puffEffect(target, 1.8)	
+					
+					newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z) 
+					
+					-- remove old prefab
+					target:Remove()	
+				end				
+			elseif targetPrefabName ==  "deciduoustree" then
+				-- the puff effect
+				puffEffect(target, 1.8)
+				if target.leaf_state == "colorful" then
+					target.build = ({ "red", "orange", "yellow" })[math.random(3)]
+					target.AnimState:SetMultColour(1, 1, 1, 1)
+					target.AnimState:OverrideSymbol("swap_leaves", "tree_leaf_"..target.build.."_build", "swap_leaves")
+				else
+					target.color = .5 + math.random() * .5
+					target.AnimState:SetMultColour(target.color, target.color, target.color, 1)	
+				end						
 			else
 				-- do default stuff
 				oldSpellFunction(tool, target, pos)
