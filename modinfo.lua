@@ -1,10 +1,14 @@
 name = "Clean Sweeper Expanded"
-version = "6"
+version = "6.1"
 description = [[
 You can change the appearances/type for more prefabs with the Clean Sweeper. 
 
 This includes by default: 
-Flowers, Evil Flowers, Ferns, Potted Fern, Succulents, Potted Succulent, Marble Shrub (all stages) and Birchnut Trees. 
++ Flowers, Evil Flowers 
++ Ferns, Potted Fern
++ Succulents, Potted Succulent
++ Marble Shrub, Birchnut Trees
++ Carnival Event Decor: Miniature Tree, Cawnival Statuette, Midsummer Night Light
 
 Optional (default off): 
 + Evergreen <=> Lumpy Evergreen
