@@ -1,5 +1,5 @@
 name = "Clean Sweeper Expanded"
-version = "6.1"
+version = "6.2"
 description = [[
 You can change the appearances/type for more prefabs with the Clean Sweeper. 
 
@@ -9,11 +9,13 @@ This includes by default:
 + Succulents, Potted Succulent
 + Marble Shrub, Birchnut Trees
 + Carnival Event Decor: Miniature Tree, Cawnival Statuette, Midsummer Night Light
++ Shell Bells (variation, not octave)
 
 Optional (default off): 
 + Evergreen <=> Lumpy Evergreen
 + Grass <=> Reeds
 + Sapling <=> Twiggy Tree
++ Mushroom <=> Mushtree
 + Berrybushes (Types with configuration options) 
 
 Version: ]]..version
@@ -79,6 +81,16 @@ configuration_options = {
 		name = "changeTwiggy",
 		label = "Sweep Sapling",
         hover = "Change from Sapling to Twiggy Tree and vice versa.",
+		options = {
+			{description = "No", data = 0},
+			{description = "Yes", data = 1},
+		},
+		default = 0,
+	},
+	{
+		name = "changeMushrooms",
+		label = "Sweep Mushrooms",
+        hover = "Change from Mushroom to Mushtree and vice versa.",
 		options = {
 			{description = "No", data = 0},
 			{description = "Yes", data = 1},
