@@ -3,7 +3,7 @@ local evergreenPrefabs = {"evergreen_normal", "evergreen_tall", "evergreen_short
 
 -- define what prefab are valid to sweep
 -- default prefabs
-local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub", "deciduoustree", "carnivaldecor_lamp", "carnivaldecor_plant", "carnivaldecor_figure", "singingshell_octave3", "singingshell_octave4", "singingshell_octave5"}
+local validModPrefab = {"flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub", "deciduoustree", "carnivaldecor_lamp", "carnivaldecor_plant", "carnivaldecor_figure", "singingshell_octave3", "singingshell_octave4", "singingshell_octave5", "cactus", "oasis_cactus"}
 
 -- mod configuration prefabs
 if GetModConfigData("changeEvergreens") == 1 then
@@ -78,7 +78,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 		local function spellCB(tool, target, pos)
 			-- if there is no target, set empty string to compare
 			local targetPrefabName = target ~= nil and target.prefab or ""
-			print("targetPrefabName"..targetPrefabName)
+			-- print("targetPrefabName"..targetPrefabName)
 			if targetPrefabName == "flower" then
 				local names = {"f1","f2","f3","f4","f5","f6","f7","f8","f9","f10"}
 				local ROSE_NAME = "rose"
@@ -266,7 +266,7 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				target.shapenumber = newShapeNumber
 			elseif targetPrefabName == "reeds" then
 				-- the puff effect
-				puffEffect(tool, target, 1.8)
+				puffEffect(tool, target, 1.4)
 
 				-- add new tree at the old position
 				local newPrefab = GLOBAL.SpawnPrefab("grass")
@@ -278,10 +278,34 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				target:Remove()
 			elseif targetPrefabName == "grass" then
 				-- the puff effect
-				puffEffect(tool, target, 1.8)
+				puffEffect(tool, target, 1.4)
 
 				-- add new tree at the old position
 				local newPrefab = GLOBAL.SpawnPrefab("reeds")
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+
+				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
+
+				-- remove old prefab
+				target:Remove()			
+			elseif targetPrefabName == "cactus" then
+				-- the puff effect
+				puffEffect(tool, target, 1.4)
+
+				-- add new tree at the old position
+				local newPrefab = GLOBAL.SpawnPrefab("oasis_cactus")
+				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
+
+				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
+
+				-- remove old prefab
+				target:Remove()
+			elseif targetPrefabName == "oasis_cactus" then
+				-- the puff effect
+				puffEffect(tool, target, 1.4)
+
+				-- add new tree at the old position
+				local newPrefab = GLOBAL.SpawnPrefab("cactus")
 				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
 
 				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
