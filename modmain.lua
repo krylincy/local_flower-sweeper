@@ -76,6 +76,20 @@ AddPrefabPostInit("reskin_tool", function(inst)
 		end
 
 		local function spellCB(tool, target, pos)
+			local function replacePrefab(fromPrefab, toPrefab, size)
+				-- the puff effect
+				puffEffect(tool, fromPrefab, size)
+
+				-- add new tree at the old position
+				local newPrefab = GLOBAL.SpawnPrefab(toPrefab)
+				local fx_pos_x, fx_pos_y, fx_pos_z = fromPrefab.Transform:GetWorldPosition()
+
+				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
+
+				-- remove old tree
+				fromPrefab:Remove()
+			end
+			
 			-- if there is no target, set empty string to compare
 			local targetPrefabName = target ~= nil and target.prefab or ""
 			-- print("targetPrefabName"..targetPrefabName)
@@ -220,30 +234,9 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				-- remove old bush
 				target:Remove()
 			elseif targetPrefabName == "sapling" then
-				-- the puff effect
-				puffEffect(tool, target, 1.4)
-
-				-- add new tree at the old position
-				local newTree = GLOBAL.SpawnPrefab("twiggytree")
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old tree
-				target:Remove()
-
+				replacePrefab(target, "twiggytree", 1.4)
 			elseif targetPrefabName == "twiggytree" then
-				-- the puff effect
-				puffEffect(tool, target, 1.8)
-
-				-- add new tree at the old position
-				local newTree = GLOBAL.SpawnPrefab("sapling")
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newTree.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old tree
-				target:Remove()
+				replacePrefab(target, "sapling", 1.8)
 			elseif targetPrefabName == "marbleshrub" then
 				-- the puff effect
 				puffEffect(tool, target, 1.8)
@@ -264,54 +257,14 @@ AddPrefabPostInit("reskin_tool", function(inst)
 
 				target.MiniMapEntity:SetIcon("marbleshrub"..newShapeNumber..".png")
 				target.shapenumber = newShapeNumber
-			elseif targetPrefabName == "reeds" then
-				-- the puff effect
-				puffEffect(tool, target, 1.4)
-
-				-- add new tree at the old position
-				local newPrefab = GLOBAL.SpawnPrefab("grass")
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old prefab
-				target:Remove()
+			elseif targetPrefabName == "reeds" then				
+				replacePrefab(target, "grass", 1.4)
 			elseif targetPrefabName == "grass" then
-				-- the puff effect
-				puffEffect(tool, target, 1.4)
-
-				-- add new tree at the old position
-				local newPrefab = GLOBAL.SpawnPrefab("reeds")
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old prefab
-				target:Remove()			
+				replacePrefab(target, "reeds", 1.4)		
 			elseif targetPrefabName == "cactus" then
-				-- the puff effect
-				puffEffect(tool, target, 1.4)
-
-				-- add new tree at the old position
-				local newPrefab = GLOBAL.SpawnPrefab("oasis_cactus")
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old prefab
-				target:Remove()
+				replacePrefab(target, "oasis_cactus", 1.4)
 			elseif targetPrefabName == "oasis_cactus" then
-				-- the puff effect
-				puffEffect(tool, target, 1.4)
-
-				-- add new tree at the old position
-				local newPrefab = GLOBAL.SpawnPrefab("cactus")
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old prefab
-				target:Remove()
+				replacePrefab(target, "cactus", 1.4)
 			elseif targetPrefabName == "evergreen" or targetPrefabName ==  "evergreen_sparse" then
 				if not target:HasTag("stump") then
 					local newPrefabName = targetPrefabName ==  "evergreen_sparse" and "evergreen" or "evergreen_sparse"
@@ -320,22 +273,8 @@ AddPrefabPostInit("reskin_tool", function(inst)
 					if target.components ~= nil and target.components.growable then
 						stage = target.components.growable.stage
 					end
-
-					-- add new tree at the old position
-					local newPrefab = GLOBAL.SpawnPrefab(newPrefabName)
-					local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-					if newPrefab.components ~= nil and newPrefab.components.growable then
-						newPrefab.components.growable:SetStage(stage)
-					end
-
-					-- the puff effect
-					puffEffect(tool, target, 1.8)
-
-					newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-					-- remove old prefab
-					target:Remove()
+					
+					replacePrefab(target, newPrefabName, 1.8)
 				end
 			elseif targetPrefabName == "deciduoustree" then
 				-- the puff effect
@@ -417,37 +356,19 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				target.AnimState:OverrideSymbol("shell_placeholder", "singingshell", octave_str.."_"..target._variation)
 				target.components.inventoryitem:ChangeImageName("singingshell_"..octave_str.."_"..target._variation)
 			elseif targetPrefabName == "red_mushroom" or targetPrefabName == "green_mushroom" or targetPrefabName == "blue_mushroom" then
-				-- the puff effect
-				puffEffect(tool, target, 1.6)
 
-				-- add new tree at the old position
 				local prefab = "mushtree_medium" -- red
 				if targetPrefabName == "green_mushroom" then prefab = "mushtree_small" end
 				if targetPrefabName == "blue_mushroom" then prefab = "mushtree_tall" end
 				
-				local newPrefab = GLOBAL.SpawnPrefab(prefab)
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old prefab
-				target:Remove()
+				replacePrefab(target, prefab, 1.6)
 			elseif targetPrefabName == "mushtree_medium" or targetPrefabName == "mushtree_small" or targetPrefabName == "mushtree_tall" then
-				-- the puff effect
-				puffEffect(tool, target, 1)
-
-				-- add new tree at the old position
+			
 				local prefab = "red_mushroom"
 				if targetPrefabName == "mushtree_small" then prefab = "green_mushroom" end
 				if targetPrefabName == "mushtree_tall" then prefab = "blue_mushroom" end
 				
-				local newPrefab = GLOBAL.SpawnPrefab(prefab)
-				local fx_pos_x, fx_pos_y, fx_pos_z = target.Transform:GetWorldPosition()
-
-				newPrefab.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
-
-				-- remove old prefab
-				target:Remove()
+				replacePrefab(target, prefab, 1)
 			else
 				-- do default stuff
 				oldSpellFunction(tool, target, pos)

@@ -1,5 +1,5 @@
 name = "Clean Sweeper Expanded"
-version = "6.3"
+version = "6.4"
 description = [[
 You can change the appearances/type for more prefabs with the Clean Sweeper. 
 
