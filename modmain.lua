@@ -1,6 +1,17 @@
 -- define what prefab are valid to sweep
 local validModPrefab = { "flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub", "deciduoustree", "carnivaldecor_lamp", "carnivaldecor_plant", "carnivaldecor_figure", "singingshell_octave3", "singingshell_octave4", "singingshell_octave5", "cactus", "oasis_cactus" }
 
+-- Potted Plants (DST) 1311366056
+if GetModConfigData("pottedPlantsMod") == 1 then
+	table.insert(validModPrefab, "pottedbluemushroom")
+	table.insert(validModPrefab, "pottedcactus")
+	table.insert(validModPrefab, "pottedevilflower")
+	table.insert(validModPrefab, "pottedflower")
+	table.insert(validModPrefab, "pottedgreenmushroom")
+	table.insert(validModPrefab, "pottedredmushroom")
+	table.insert(validModPrefab, "pottedrose")
+end
+
 -- mod configuration prefabs
 if GetModConfigData("changeEvergreens") == 1 then
 	table.insert(validModPrefab, "evergreen")
@@ -84,6 +95,30 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				fromPrefab:Remove()
 
 				return newPrefab
+			end
+
+			-- Potted Plants (DST) 1311366056
+			local function changePottedPlants(prefix, maxVariation)
+				local currentAnimName = target.animname
+				local nextAnimName = prefix .. tostring(math.random(maxVariation))
+				local prefixLength = string.len(prefix)
+
+				if GetModConfigData("randomSelection") ~= 1 then
+					if currentAnimName == prefix .. tostring(maxVariation) then
+						-- start from beginning
+						nextAnimName = prefix .. "1"
+					else
+						-- extract the number (string position after prefix), increment and add the following prefix number (+1)
+						local minPosition = prefixLength + 1
+						local maxPosition = prefixLength + 2
+						nextAnimName = prefix .. (math.floor(string.sub(currentAnimName, minPosition, maxPosition) + 1))
+					end
+				end
+
+				puffEffect(tool, target, 1)
+
+				target.animname = nextAnimName
+				target.AnimState:PlayAnimation(target.animname)
 			end
 
 			-- if there is no target, set empty string to compare
@@ -256,7 +291,18 @@ AddPrefabPostInit("reskin_tool", function(inst)
 			elseif targetPrefabName == "carnivaldecor_lamp" then
 				puffEffect(tool, target, 1.4)
 
+				local currentShape = target.shape
 				target.shape = math.random(3)
+
+				if GetModConfigData("randomSelection") ~= 1 then
+					if currentShape == 3 then
+						-- start from beginning
+						target.shape = 1
+					else
+						target.shape = currentShape + 1
+					end
+				end
+
 				target.AnimState:PlayAnimation("idle" .. target.shape .. "_off")
 
 				target.Light:Enable(false)
@@ -269,7 +315,18 @@ AddPrefabPostInit("reskin_tool", function(inst)
 			elseif targetPrefabName == "carnivaldecor_plant" then
 				puffEffect(tool, target, 1.4)
 
+				local currentShape = target.shape
 				target.shape = math.random(3)
+
+				if GetModConfigData("randomSelection") ~= 1 then
+					if currentShape == 3 then
+						-- start from beginning
+						target.shape = 1
+					else
+						target.shape = currentShape + 1
+					end
+				end
+
 				target.AnimState:PlayAnimation("idle_" .. tostring(target.shape), true)
 			elseif targetPrefabName == "carnivaldecor_figure" then
 
@@ -296,7 +353,22 @@ AddPrefabPostInit("reskin_tool", function(inst)
 
 				puffEffect(tool, target, 1.2)
 
+				local defaultShape = "s" .. 0
+				local currentShape = target.shape or defaultShape
 				local newShape = "s" .. math.random(12)
+
+				if GetModConfigData("randomSelection") ~= 1 then
+					if currentShape == "s12" then
+						-- start from beginning
+						newShape = "s" .. 1
+					else
+						-- extract the number (string position after prefix), increment and add the following prefix number (+1)
+						local minPosition = 2
+						local maxPosition = 3
+						newShape = 's' .. (math.floor(string.sub(currentShape, minPosition, maxPosition) + 1))
+					end
+				end
+
 				if target.shape ~= nil then
 					target:RemoveTag("blindbox_" .. tostring(shape_rarity[target.shape]))
 				end
@@ -311,8 +383,17 @@ AddPrefabPostInit("reskin_tool", function(inst)
 
 				-- eg. "ocatave3"
 				local octave_str = targetPrefabName:sub(-7)
+				local currentVariation = target._variation
 
 				target._variation = math.random(3)
+				if GetModConfigData("randomSelection") ~= 1 then
+					if currentVariation == 3 then
+						-- start from beginning
+						target._variation = 1
+					else
+						target._variation = currentVariation + 1
+					end
+				end
 				target.AnimState:OverrideSymbol("shell_placeholder", "singingshell", octave_str .. "_" .. target._variation)
 				target.components.inventoryitem:ChangeImageName("singingshell_" .. octave_str .. "_" .. target._variation)
 			elseif targetPrefabName == "red_mushroom" or targetPrefabName == "green_mushroom" or targetPrefabName == "blue_mushroom" then
@@ -329,6 +410,22 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				if targetPrefabName == "mushtree_tall" then prefab = "blue_mushroom" end
 
 				replacePrefab(target, prefab, 1)
+			elseif targetPrefabName == "pottedbluemushroom" then
+				changePottedPlants("bm", 3)
+			elseif targetPrefabName == "pottedcactus" then
+				changePottedPlants("c", 5)
+			elseif targetPrefabName == "pottedevilflower" then
+				changePottedPlants("ef", 8)
+			elseif targetPrefabName == "pottedflower" then
+				changePottedPlants("pf", 9)
+			elseif targetPrefabName == "pottedflower" then
+				changePottedPlants("pf", 9)
+			elseif targetPrefabName == "pottedgreenmushroom" then
+				changePottedPlants("gm", 3)
+			elseif targetPrefabName == "pottedredmushroom" then
+				changePottedPlants("rm", 3)
+			elseif targetPrefabName == "pottedrose" then
+				changePottedPlants("pr", 7)
 			elseif targetPrefabName == "reeds" then
 				replacePrefab(target, "grass", 1.4)
 			elseif targetPrefabName == "grass" then
