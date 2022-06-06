@@ -1,5 +1,5 @@
 -- define what prefab are valid to sweep
-local validModPrefab = { "flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub", "deciduoustree", "carnivaldecor_lamp", "carnivaldecor_plant", "carnivaldecor_figure", "singingshell_octave3", "singingshell_octave4", "singingshell_octave5", "cactus", "oasis_cactus" }
+local validModPrefab = { "flower", "flower_evil", "succulent_plant", "succulent_potted", "cave_fern", "pottedfern", "marbleshrub", "deciduoustree", "carnivaldecor_lamp", "carnivaldecor_plant", "carnivaldecor_figure", "carnivaldecor_figure_season2", "singingshell_octave3", "singingshell_octave4", "singingshell_octave5", "cactus", "oasis_cactus" }
 
 -- Potted Plants (DST) 1311366056
 if GetModConfigData("pottedPlantsMod") == 1 then
@@ -289,13 +289,14 @@ AddPrefabPostInit("reskin_tool", function(inst)
 					target.AnimState:SetMultColour(target.color, target.color, target.color, 1)
 				end
 			elseif targetPrefabName == "carnivaldecor_lamp" then
+				local NUM_SHAPES = 6
 				puffEffect(tool, target, 1.4)
 
 				local currentShape = target.shape
-				target.shape = math.random(3)
+				target.shape = math.random(NUM_SHAPES)
 
 				if GetModConfigData("randomSelection") ~= 1 then
-					if currentShape == 3 then
+					if currentShape >= NUM_SHAPES then
 						-- start from beginning
 						target.shape = 1
 					else
@@ -328,8 +329,9 @@ AddPrefabPostInit("reskin_tool", function(inst)
 				end
 
 				target.AnimState:PlayAnimation("idle_" .. tostring(target.shape), true)
-			elseif targetPrefabName == "carnivaldecor_figure" then
+			elseif targetPrefabName == "carnivaldecor_figure" or targetPrefabName == "carnivaldecor_figure_season2" then
 
+				-- defaults for carnivaldecor_figure (season 1)
 				local shape_rarity = {
 					s1 = "rare",
 					s2 = "uncommon",
@@ -344,6 +346,24 @@ AddPrefabPostInit("reskin_tool", function(inst)
 					s11 = "common",
 					s12 = "common",
 				}
+
+				if targetPrefabName == "carnivaldecor_figure_season2" then
+					-- season 2
+					shape_rarity = {
+						s1 = "rare",
+						s2 = "uncommon",
+						s3 = "uncommon",
+						s4 = "common",
+						s5 = "common",
+						s6 = "common",
+						s7 = "uncommon",
+						s8 = "common",
+						s9 = "common",
+						s10 = "common",
+						s11 = "common",
+						s12 = "common",
+					}
+				end
 
 				local rarity_decor_vale_map = {
 					rare     = 20,
